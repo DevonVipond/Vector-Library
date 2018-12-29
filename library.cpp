@@ -1,13 +1,16 @@
-/*
-TODO
-    deallocate may not remove all memory or delete pointer
-    make functions for size and capacity
-    use allocator construct and delete
-*/
 #include <stdio.h>
 #include <iostream>
-#define growthFactor 2
+
+#define GROWTHFACTOR 2//rename GROWTHFACTOR
+
 using namespace std;
+/*
+TODO
+google unit testing
+operator !=
+emplace, emplace_back
+
+*/
 template <class T, class A = std::allocator<T> >
 class Vector{
     private:
@@ -17,8 +20,13 @@ class Vector{
         int capacity_;
         int size_;
         A  allocator_;
-
-        void reallocate(int oldCapacity, int newCapacity){ //used to change the amount of allocated memory
+        
+        // Changes the amount of allocated memory
+        void reallocate(int oldCapacity, int newCapacity){ 
+            // Check if newCapacity is greater than largest possible allocation size
+            if (newCapacity > allocator_.max_size()) {
+                throw std::length_error("newCapacity > max_size");
+            }
             T* temp = data_;
             data_ = 0;
             allocator_.deallocate(temp, oldCapacity);
@@ -27,7 +35,12 @@ class Vector{
             end_ = data_;
             end_capacity_ = data_ + capacity_;
         }
-        void reallocate(int oldCapacity, int newCapacity, T* dataToCopy){ //used to change the amount of allocated memory
+        
+        // Changes the amount of allocated memory
+        void reallocate(int oldCapacity, int newCapacity, T* dataToCopy){ 
+            if (newCapacity > allocator_.max_size()) {
+                throw std::length_error("newCapacity > max_size");
+            }
             int oldSize = end_ - data_;
             data_ = 0;
             data_ = allocator_.allocate(newCapacity);
@@ -38,6 +51,7 @@ class Vector{
             end_ = data_ + oldSize;
             end_capacity_ = data_ + newCapacity;
         }
+        
         void print(){
             cout << endl << "------------------------------" << endl;
             cout << "Print data_: " << endl;
@@ -51,7 +65,7 @@ class Vector{
             cout << endl << "------------------------------" << endl;
         }
     public:
-        // public member functions
+    
         Vector(): size_(0), capacity_(10){  //10 is the default number of elements
             data_ = allocator_.allocate(10);
             end_capacity_ = data_ + 10;
@@ -75,39 +89,14 @@ class Vector{
         }
         
         Vector &operator=(const Vector &arg){//check if this equals arg
-            reallocate(capacity_, arg.getCapacity());
-            for(int i = 0; i < arg.getSize(); i++){ 
-                data_[i] = arg[i];
-            }
-            end_ = data_ + arg.getSize();
+            //if(arg != this){
+                reallocate(capacity_, arg.getCapacity());
+                for(int i = 0; i < arg.getSize(); i++){ 
+                    data_[i] = arg[i];
+                }
+                end_ = data_ + arg.getSize();
+            //}
         }
-        
-        Vector &operator+=(const Vector &arg){ // this needs tons of testing
-            int newSize = this->getSize() + arg.getSize(); 
-            int newCapacity = this->getCapacity() + arg.getCapacity(); //could write func and use *this
-            T* dataToCopy = data_;
-            reallocate(this->getCapacity(), newCapacity, dataToCopy);
-            for(int i = 0; i < arg.getSize(); i++){ //empty elements??
-               data_[i + this->getSize()] = arg[i];
-            }
-            end_ = data_ + newSize;
-            end_capacity_ = data_ + newCapacity;
-        }
-        
-        /*Vector<T> operator*(const vector<T>& v, double alfa)
-        {
-          
-        }*/
-
-        /* Vector<T> operator+(const Vector<T>& v1, const Vector<T>& v2)
-        {
-            
-        }*/
-
-        /*Vector<T> operator-(const vector<T>& v1, const vector<T>& v2)
-        {
-    
-        }*/
         
         T &operator[](int index){
                 if(index >= (end_capacity_ - data_) || index < 0) {
@@ -132,7 +121,7 @@ class Vector{
         
         void push_back(T input){
             if(end_ >= end_capacity_){
-                int newCapacity = (end_capacity_ - data_) * growthFactor; 
+                int newCapacity = getCapacity() * GROWTHFACTOR; 
                 T* tempPtr = data_;
                 data_ = allocator_.allocate(newCapacity); 
                 for(int i = 0; i <= (end_ - tempPtr); i++){
@@ -158,23 +147,20 @@ class Vector{
         int getSize() const{
             return end_ - data_;
         }
-
-    
 };
 
 int main()
 {
-    printf("Hello World\n");
-    Vector<int> x(1);
-    x.push_back(1);
-    x.push_back(2);
-    x.push_back(3);
+    Vector<char> x(1);
+    x.push_back('a');
+    x.push_back('b');
+    /*x.push_back(3);
     x.push_back(4);
     x.push_back(1);
     x.push_back(2);
     x.push_back(3);
-    x.push_back(4);
-     Vector<int> y(2);
+    x.push_back(4);*/
+     Vector<char> y(2);
     y.push_back(51);
     y.push_back(11);
     y.push_back(21);
@@ -182,18 +168,17 @@ int main()
     y.push_back(41);
     y.push_back(99);
    
-    y += x;
 
-    
+    y = x;
     std::cout << y[0] << endl;
-    
     std::cout << y[1] << endl;
-    
-    std::cout << y[2] << endl;
-    
+  /* std::cout << y[2] << endl;
     std::cout << y[3] << endl;
-    std::cout << y[6] << endl;
-    std::cout << y[7] << endl;
+    std::cout << y[4] << endl;
     std::cout << y[5] << endl;
+    std::cout << y[6] << endl;
+    std::cout << y[8] << endl;*/
+    
     return 0;
 }
+

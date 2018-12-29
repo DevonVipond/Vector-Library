@@ -1,3 +1,0 @@
-/cygdrive/c/C/Vector Library CPP/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/cygdrive/c/C/Vector Library CPP/cmake-build-debug/CMakeFiles/edit_cache.dir
-/cygdrive/c/C/Vector Library CPP/cmake-build-debug/CMakeFiles/Vector_Library_CPP.dir

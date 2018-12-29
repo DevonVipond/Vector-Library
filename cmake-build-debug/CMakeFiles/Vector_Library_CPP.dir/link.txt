@@ -1,2 +1,0 @@
-/usr/bin/ar.exe qc libVector_Library_CPP.a  CMakeFiles/Vector_Library_CPP.dir/library.cpp.o
-/usr/bin/ranlib.exe libVector_Library_CPP.a
